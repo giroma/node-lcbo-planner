@@ -31,7 +31,7 @@ const getProductsData = async (page) => {
         throw new Error('There was a problem reaching the API Server');
       }
     })
-    .catch((err) => console.log(err))
+    .catch((err) => console.log('catch axios error',err))
 }
 const createAWShash = (productHash) => {
   const keysArray = Object.keys(productHash)
@@ -89,14 +89,14 @@ const buildDynamoObject = async (data) => {
       }
       );
     });
-    return params;
+  return params;
 }
 
 // Write to dynamoDB
-let count =0;
-const writeToDynamo = async (params) => {
-  let batchWrite = await ddb.batchWriteItem(params, function(err, data) {
-    if (err) console.log(err, err.stack); // an error occurred
+const writeToDynamo = (params) => {
+  let count = 1;
+  ddb.batchWriteItem(params, function(err, data) {
+    if (err) console.log('batch error',params.lcbo_products, err, err.stack); // an error occurred
     else  {
       // console.log('success', data); // successful response
       // Exponentially raise the backoff time
@@ -108,9 +108,9 @@ const writeToDynamo = async (params) => {
         count++;
         setTimeout(function(){
           let params = {};
-          params['RequestItems'] = itemsLost;
+          params.RequestItems = itemsLost;
           ddb.batchWriteItem(params, writeToDynamo);
-        }, 1000 * count);
+        }, (1000 * count));
 
       }
     }
@@ -123,7 +123,7 @@ const loopProductsPages = async (pages) => {
   for (let i = 1; i <= pages; i++) {
     let getProductsDataFn = await getProductsData(i);
     let buildDynamoObjectFn = await buildDynamoObject(getProductsDataFn);
-    let writeToDynamoFn = await writeToDynamo(buildDynamoObjectFn);
+    await writeToDynamo(buildDynamoObjectFn);
     }
 }
 

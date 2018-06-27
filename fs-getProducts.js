@@ -58,8 +58,8 @@ const writeToFile = (params,i) => {
 
 // Loop through all pages to build Objects
 const loopProductsPages = async (pages) => {
-  fs.writeFile('products.json', '[]', () => {console.log('file created')});
-  for (let i = 1; i <= pages; i++) {
+  // fs.writeFile('products.json', '[]', () => {console.log('file created')});
+  for (let i = 385; i <= pages; i++) {
     let getProductsDataFn = await getProductsData(i);
     // let buildDynamoObjectFn = await buildDynamoObject(getProductsDataFn);
     await writeToFile(getProductsDataFn,i);

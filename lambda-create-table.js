@@ -7,7 +7,7 @@ AWS.config.update({region: 'us-east-1'});
 // Create an instance of dynamoDB
 const ddb = new AWS.DynamoDB({apiVersion: '2012-10-08'});
 
-const tableName = "lcbo_stores";
+const tableName = "lcbo_products";
 
 
 // Delete Table
@@ -43,8 +43,8 @@ const createTable = () => {
             }
         ],
         ProvisionedThroughput: {
-            ReadCapacityUnits: 1,
-            WriteCapacityUnits: 1
+            ReadCapacityUnits: 4,
+            WriteCapacityUnits: 4
         },
         TableName: tableName,
         StreamSpecification: {
@@ -63,8 +63,8 @@ const createTable = () => {
 }
 
 const recreateTable = async () => {
-  const deleteTableFn = await deleteTable();
-  const createTableFn = await createTable();
+  // await deleteTable();
+  await createTable();
   console.log('Success')
 }
 
